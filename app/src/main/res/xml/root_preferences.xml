@@ -24,6 +24,38 @@
             app:summary="@string/target_summary_sms" />
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/header_web"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            android:key="@string/key_enable_web"
+            app:title="@string/enable_web" />
+        <EditTextPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue=""
+            android:key="@string/key_target_web"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="@string/target_summary_web"
+            android:title="@string/target_title_web"
+            app:iconSpaceReserved="false" />
+        <EditTextPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue=""
+            android:key="@string/key_target_web_custom"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="@string/target_summary_web_custom"
+            android:title="@string/target_title_web_custom"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory
         app:title="@string/header_telegram"
         app:iconSpaceReserved="false">
@@ -45,25 +77,6 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/title_telegram_apikey"
-            app:iconSpaceReserved="false" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        app:title="@string/header_web"
-        app:iconSpaceReserved="false">
-
-        <SwitchPreferenceCompat
-            app:iconSpaceReserved="false"
-            android:key="@string/key_enable_web"
-            app:title="@string/enable_web" />
-        <EditTextPreference
-            android:defaultValue=""
-            android:key="@string/key_target_web"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/target_title_web"
-            android:summary="@string/target_summary_web"
             app:iconSpaceReserved="false" />
 
     </PreferenceCategory>

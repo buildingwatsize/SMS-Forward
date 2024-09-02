@@ -25,4 +25,7 @@
     <string name="key_target_web">key_target_web</string>
     <string name="target_title_web">Target Web URL</string>
     <string name="target_summary_web">Example: https://site.com/api\nThis app will send POST request on receive SMS, request body example:\n{ "from": "10000", "message": "Hello" }</string>
+    <string name="key_target_web_custom">key_target_web_custom</string>
+    <string name="target_title_web_custom">Target Web Custom Template</string>
+    <string name="target_summary_web_custom">Example: {\"key\":\"custom\",\"value\":\"$msg\"}\nIf template is defined, the body request will be like the given template with replaced \"$msg\" to original body string \nExample: {\"key\":\"custom\",\"value\":\"{\\\"from\\\": \\\"10000\\\", \\\"message\\\": \\\"Hello\\\"}"}</string>
 </resources>

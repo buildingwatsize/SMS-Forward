@@ -34,4 +34,7 @@ public class Forwarder {
     public static void forwardViaWeb(String senderNumber, String message, String endpoint) {
         new ForwardTaskForWeb(senderNumber, message, endpoint).execute();
     }
+    public static void forwardViaWebCustom(String senderNumber, String message, String endpoint, String templateBody) {
+        new ForwardTaskForWebCustom(senderNumber, message, endpoint, templateBody).execute();
+    }
 }

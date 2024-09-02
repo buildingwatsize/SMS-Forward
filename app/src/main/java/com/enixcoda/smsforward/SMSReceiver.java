@@ -9,14 +9,23 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 public class SMSReceiver extends BroadcastReceiver {
+    String TAG = "SERVICE";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!intent.getAction().equals(android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
+        if (!Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction()))
             return;
 
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -26,6 +35,7 @@ public class SMSReceiver extends BroadcastReceiver {
 
         final boolean enableWeb = sharedPreferences.getBoolean(context.getString(R.string.key_enable_web), false);
         final String targetWeb = sharedPreferences.getString(context.getString(R.string.key_target_web), "");
+        final String targetWebCustom = sharedPreferences.getString(context.getString(R.string.key_target_web_custom), "");
 
         final boolean enableTelegram = sharedPreferences.getBoolean(context.getString(R.string.key_enable_telegram), false);
         final String targetTelegram = sharedPreferences.getString(context.getString(R.string.key_target_telegram), "");
@@ -34,15 +44,20 @@ public class SMSReceiver extends BroadcastReceiver {
         if (!enableSMS && !enableTelegram && !enableWeb) return;
 
         final Bundle bundle = intent.getExtras();
+        assert bundle != null;
         final Object[] pduObjects = (Object[]) bundle.get("pdus");
         if (pduObjects == null) return;
 
+        final List<String> serviceEnabledList = new ArrayList<String>(Arrays.asList((enableSMS ? "SMS": ""), (enableWeb ? "WEB": ""), (enableTelegram ? "Telegram": "")));
+        serviceEnabledList.removeAll(Arrays.asList("", null));
+        Log.i(TAG, "Service enabled list: " + String.join(", ", serviceEnabledList));
         for (Object messageObj : pduObjects) {
             SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) messageObj, (String) bundle.get("format"));
             String senderNumber = currentMessage.getDisplayOriginatingAddress();
             String senderNames = lookupContactName(context, senderNumber);
             String senderLabel = (senderNames.isEmpty() ? "" : senderNames + " ") + "(" + senderNumber + ")";
             String rawMessageContent = currentMessage.getDisplayMessageBody();
+            Log.i(TAG, "onReceive: senderNumber="+senderNumber + " | senderLabel="+senderLabel + " | rawMessageContent=" + rawMessageContent);
 
             if (senderNumber.equals(targetNumber)) {
                 // reverse message
@@ -54,12 +69,16 @@ public class SMSReceiver extends BroadcastReceiver {
                 }
             } else {
                 // normal message, forwarded
-                if (enableSMS && !targetNumber.equals(""))
+                if (enableSMS && !targetNumber.isEmpty())
                     Forwarder.forwardViaSMS(senderLabel, rawMessageContent, targetNumber);
-                if (enableTelegram && !targetTelegram.equals("") && !telegramToken.equals(""))
+                if (enableWeb && !targetWeb.isEmpty()) {
+                    if (!targetWebCustom.isEmpty())
+                        Forwarder.forwardViaWebCustom(senderLabel, rawMessageContent, targetWeb, targetWebCustom);
+                    else
+                        Forwarder.forwardViaWeb(senderLabel, rawMessageContent, targetWeb);
+                }
+                if (enableTelegram && !targetTelegram.isEmpty() && !telegramToken.isEmpty())
                     Forwarder.forwardViaTelegram(senderLabel, rawMessageContent, targetTelegram, telegramToken);
-                if (enableWeb && !targetWeb.equals(""))
-                    Forwarder.forwardViaWeb(senderLabel, rawMessageContent, targetWeb);
             }
         }
     }
