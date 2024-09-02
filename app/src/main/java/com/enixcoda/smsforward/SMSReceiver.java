@@ -41,6 +41,9 @@ public class SMSReceiver extends BroadcastReceiver {
         final String targetTelegram = sharedPreferences.getString(context.getString(R.string.key_target_telegram), "");
         final String telegramToken = sharedPreferences.getString(context.getString(R.string.key_telegram_apikey), "");
 
+        final String ignoreListString = sharedPreferences.getString(context.getString(R.string.key_settings_ignore_list), "");
+        final String[] ignoreList = ignoreListString.split(",");
+
         if (!enableSMS && !enableTelegram && !enableWeb) return;
 
         final Bundle bundle = intent.getExtras();
@@ -58,6 +61,14 @@ public class SMSReceiver extends BroadcastReceiver {
             String senderLabel = (senderNames.isEmpty() ? "" : senderNames + " ") + "(" + senderNumber + ")";
             String rawMessageContent = currentMessage.getDisplayMessageBody();
             Log.i(TAG, "onReceive: senderNumber="+senderNumber + " | senderLabel="+senderLabel + " | rawMessageContent=" + rawMessageContent);
+
+
+            for (String ignoreItem : ignoreList) {
+                if (rawMessageContent.contains(ignoreItem.trim())) {
+                    Log.i(TAG, "onReceive: Message contains ignore words, Skipped.");
+                    return;
+                }
+            }
 
             if (senderNumber.equals(targetNumber)) {
                 // reverse message
