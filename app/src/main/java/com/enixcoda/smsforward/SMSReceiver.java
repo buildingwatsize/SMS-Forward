@@ -18,7 +18,6 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class SMSReceiver extends BroadcastReceiver {
     String TAG = "SERVICE";
@@ -51,7 +50,7 @@ public class SMSReceiver extends BroadcastReceiver {
         final Object[] pduObjects = (Object[]) bundle.get("pdus");
         if (pduObjects == null) return;
 
-        final List<String> serviceEnabledList = new ArrayList<String>(Arrays.asList((enableSMS ? "SMS": ""), (enableWeb ? "WEB": ""), (enableTelegram ? "Telegram": "")));
+        final List<String> serviceEnabledList = new ArrayList<>(Arrays.asList((enableSMS ? "SMS" : ""), (enableWeb ? "WEB" : ""), (enableTelegram ? "Telegram" : "")));
         serviceEnabledList.removeAll(Arrays.asList("", null));
         Log.i(TAG, "Service enabled list: " + String.join(", ", serviceEnabledList));
         for (Object messageObj : pduObjects) {
